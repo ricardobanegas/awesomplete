@@ -2,9 +2,10 @@ describe("awesomplete",function(){
 
 	var awesompleter;
 	var dummyInput;
+	var dummyBody;
 
 	beforeEach(function(){
-		var dummyBody = document.createElement('body');
+		dummyBody = document.createElement('body');
 		dummyInput = document.createElement('input');
 		dummyBody.appendChild(dummyInput);
 		awesompleter = new Awesomplete(dummyInput);
@@ -17,6 +18,10 @@ describe("awesomplete",function(){
 		it("should have 2 min chars", shared.expectMinCharsToBe(2));
 
 		it("should have 10 max items", shared.expectMaxItemsToBe(10));
+	})
+
+	it("should have an empty list",function(){
+		expect(awesompleter._list.length).toBe(0);
 	})
 
 	describe("data-list", function(){
@@ -44,6 +49,10 @@ describe("awesomplete",function(){
 		it("should show all matching suggestions if more are not available", shared.expectNumSuggestionsWith(6, 'testtest'));
 
 		it("should autocomplete when a suggestion is selected", shared.expectSelectingFirstSuggestionToWorkWith('test'));
+
+		it("should have 10 max items",function(){
+			expect(awesompleter.maxItems).toBe(10);
+		})
 	})
 
 	describe("custom object",function(){
@@ -79,8 +88,22 @@ describe("awesomplete",function(){
 		it("should autocomplete when a suggestion is selected", shared.expectSelectingFirstSuggestionToWorkWith('test'));
 
 		it("should autocomplete the first suggestion when autoFirst is true", shared.expectAutoFirstToWorkWith('test'));
+
+		it("should have 3 min chars",function(){
+			awesompleter = new Awesomplete(dummyInput,{minChars:3});
+			expect(awesompleter.minChars).toBe(3);
+		})
+
+		it("should support key value pairs", function(){
+			awesompleter = new Awesomplete(dummyInput,{list:[[0,'Test0'],[1,'Test1']]});
+			awesompleter.input.value = 'Tes';
+			awesompleter.evaluate();
+			awesompleter.select(dummyBody.querySelector('[data-id="1"]'));
+			expect(awesompleter.hidden.value).toBe('1');
+			expect(awesompleter.input.value).toBe('Test1');
+		})
 	})
-});
+})
 
 describe("awesomplete helpers",function(){
 
